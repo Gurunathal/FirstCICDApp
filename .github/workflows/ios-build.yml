@@ -12,17 +12,13 @@ jobs:
 
     steps:
 
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install SwiftLint
         run: brew install swiftlint
 
       - name: Run SwiftLint
         run: swiftlint --strict
-
-      - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode.app
 
       - name: Run Unit Tests
         run: |
@@ -38,14 +34,16 @@ jobs:
           -scheme FirstCICDApp \
           -configuration Release \
           -archivePath $PWD/build/FirstCICDApp.xcarchive \
-          -destination 'generic/platform=iOS'
+          -destination 'generic/platform=iOS' \
+          CODE_SIGNING_ALLOWED=NO
 
       - name: Export IPA
         run: |
           xcodebuild -exportArchive \
           -archivePath $PWD/build/FirstCICDApp.xcarchive \
           -exportOptionsPlist ExportOptions.plist \
-          -exportPath $PWD/build
+          -exportPath $PWD/build \
+          CODE_SIGNING_ALLOWED=NO
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
